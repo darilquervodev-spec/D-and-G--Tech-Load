@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>D and G Tech & Load Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="layout">
+    <!-- ——— SIDEBAR ——— -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand-title">D AND G TECH & LOAD</div>
+        <div class="brand-sub">ACCESSORIES · G‑CASH & E‑LOAD · REPAIR</div>
+        <div class="brand-pill">
+          <span class="brand-pill-dot"></span>
+          Live store overview
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-label">Main</div>
+        <div class="nav-item active">Dashboard</div>
+        <div class="nav-item">Inventory</div>
+        <div class="nav-item">Daily Sales</div>
+        <div class="nav-item">Daily Expenses</div>
+        <div class="nav-item">Reports</div>
+      </div>
+
+      <div class="sidebar-footer">
+        D and G Tech & Load · Dashboard<br>
+        Last sync: <span id="sidebarLastSync">—</span>
+        <button id="btnResetDashboard" class="btn-ghost" style="margin-top: 12px; width: 100%; border-color: var(--danger); color: var(--danger);">Reset Dashboard</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <!-- Dashboard View -->
+      <div id="view-dashboard" class="view">
+        <header style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+          <div>
+            <div class="main-title">Store Dashboard</div>
+            <div class="main-subtitle">Capital · Cash · Inventory · Activity</div>
+          </div>
+          <input type="date" id="dashboardDatePicker" class="input" style="width: auto; margin-bottom: 0;">
+        </header>
+        <section class="grid">
+          <div class="card" style="grid-column: span 4;"><div class="card-title">Store Capital</div><div class="card-value" id="capitalValue">₱0</div></div>
+          <div class="card" style="grid-column: span 4;"><div class="card-title">Cash on Hand</div><div class="card-value" id="cashValue">₱0</div></div>
+          <div class="card card-profit" style="grid-column: span 4;"><div class="card-title">Today’s Profit</div><div class="card-value" id="todayProfit">₱0</div></div>
+          <div class="card card-sales" style="grid-column: span 6;"><div class="card-title">Today’s Sales</div><div class="card-value" id="todaySales">₱0</div></div>
+          <div class="card" style="grid-column: span 6;"><div class="card-title">Today’s Expenses</div><div class="card-value" id="todayExpenses">₱0</div></div>
+        </section>
+        <section class="grid">
+          <div class="card" style="grid-column: span 4;">
+            <div class="card-title">G‑Cash & E‑Load</div>
+            <div class="btn-row" id="gcashButtons">
+              <button class="btn-chip" data-amount="15">₱15</button>
+              <button class="btn-chip" data-amount="40">₱40</button>
+              <button class="btn-chip" data-amount="100">₱100</button>
+              <button class="btn-chip" data-amount="200">₱200</button>
+              <button class="btn-chip" data-amount="300">₱300</button>
+              <button class="btn-chip" data-amount="500">₱500</button>
+            </div>
+            <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 4px;">
+              <input class="input" id="gcashManualAmount" type="number" placeholder="Enter amount" style="margin-bottom: 0;">
+              <button class="btn-primary" id="btnRecordGcashManual" style="margin-top: 0;">Record G-Cash Sale</button>
+            </div>
+            <div class="main-subtitle" id="gcashStatus" style="margin-top: 8px;">Tap an amount or enter manually.</div>
+          </div>
+          <div class="card" style="grid-column: span 4;"><div class="card-title">Low Stock Alerts</div><div class="list" id="lowStockList"></div></div>
+          <div class="card" style="grid-column: span 4;">
+            <div class="card-title">Quick Sales Entry</div>
+            <input class="input" id="saleProduct" placeholder="Product name" list="inventoryDatalist">
+            <datalist id="inventoryDatalist"></datalist>
+            <input class="input" id="saleQty" type="number" value="1">
+            <input class="input" id="salePrice" type="number" placeholder="Price">
+            <button class="btn-primary" id="btnRecordSale">Record Sale</button>
+          </div>
+        </section>
+        <section class="grid">
+          <div class="card" style="grid-column: span 4;">
+            <div class="card-title">Quick Expense Entry</div>
+            <input class="input" id="expenseDesc" placeholder="Description">
+            <input class="input" id="expenseAmount" type="number" placeholder="Amount">
+            <button class="btn-ghost" id="btnRecordExpense">Add Expense</button>
+          </div>
+          <div class="card" style="grid-column: span 4;">
+            <div class="card-title">Cash In / Funding</div>
+            <input class="input" id="cashInDesc" placeholder="Source (e.g., Initial Fund)">
+            <input class="input" id="cashInAmount" type="number" placeholder="Amount">
+            <button class="btn-primary" id="btnRecordCashIn" style="margin-top: 8px; background: linear-gradient(135deg, var(--accent-blue), #0369a1);">Record Cash In</button>
+          </div>
+          <div class="card" style="grid-column: span 4;"><div class="card-title">Recent Activity</div><div class="list" id="activityList"></div></div>
+        </section>
+      </div>
+
+      <!-- Inventory View -->
+      <div id="view-inventory" class="view" style="display:none">
+        <header><div class="main-title">Inventory</div></header>
+        <section class="grid" style="margin-bottom: 14px;">
+          <div class="card" style="grid-column: span 6;"><div class="card-title">Total Inventory Cost</div><div class="card-value" id="invTotalCost">₱0</div></div>
+          <div class="card" style="grid-column: span 6;"><div class="card-title">Total Potential Profit</div><div class="card-value" id="invTotalProfit">₱0</div></div>
+        </section>
+        <section class="grid">
+          <div class="card" style="grid-column: span 4;">
+            <div class="card-title">Add New Product</div>
+            <input class="input" id="invProduct" placeholder="Product name">
+            <input class="input" id="invStock" type="number" placeholder="Initial stock">
+            <input class="input" id="invUnitCost" type="number" placeholder="Unit cost">
+            <input class="input" id="invPrice" type="number" placeholder="Selling price">
+            <button class="btn-primary" id="btnAddInventory">Add Product</button>
+          </div>
+          <div class="card" style="grid-column: span 8;">
+            <div class="card-title">Stock List</div>
+            <input class="input" id="invSearch" placeholder="Search products..." style="margin-top: 10px;">
+            <div class="list" id="fullInventoryList"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sales View -->
+      <div id="view-daily-sales" class="view" style="display:none">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="main-title">Daily Sales History</div>
+          <input type="date" id="salesDatePicker" class="input" style="width: auto; margin-bottom: 0;">
+        </header>
+        <section class="grid"><div class="card" style="grid-column: span 12;"><div class="list" id="fullSalesList"></div></div></section>
+      </div>
+
+      <!-- Expenses View -->
+      <div id="view-daily-expenses" class="view" style="display:none">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="main-title">Daily Expenses History</div>
+          <input type="date" id="expensesDatePicker" class="input" style="width: auto; margin-bottom: 0;">
+        </header>
+        <section class="grid"><div class="card" style="grid-column: span 12;"><div class="list" id="fullExpensesList"></div></div></section>
+      </div>
+
+      <!-- Reports View -->
+      <div id="view-reports" class="view" style="display:none">
+        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div class="main-title">Financial Reports</div>
+          <input type="date" id="reportsDatePicker" class="input" style="width: auto; margin-bottom: 0;">
+        </header>
+        <section class="grid">
+          <div class="card card-sales" style="grid-column: span 3;"><div class="card-title">Total Sales</div><div class="card-value" id="reportSales">₱0</div></div>
+          <div class="card" style="grid-column: span 3;"><div class="card-title">Total Expenses</div><div class="card-value" id="reportExpenses">₱0</div></div>
+          <div class="card card-profit" style="grid-column: span 3;"><div class="card-title">Daily Profit</div><div class="card-value" id="reportProfit">₱0</div></div>
+          <div class="card card-profit" style="grid-column: span 3;"><div class="card-title">Total Net Profit</div><div class="card-value" id="reportTotalNetProfit">₱0</div></div>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>
