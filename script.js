@@ -18,7 +18,7 @@ async function syncToSupabase() {
       { key: 'storeCapital', value: storeCapital }
     ]);
 
-    // Sync Inventory (Upserting names as unique keys)
+    // Sync Inventory
     if (inventoryData.length > 0) {
       await _supabase.from('inventory').upsert(inventoryData);
     }
@@ -148,16 +148,18 @@ if (mobileMenuBtn) {
   sidebarOverlay.addEventListener("click", toggleSidebar);
 }
 
-function addActivity(type, label, amount, profit = 0) {
+async function addActivity(type, label, amount, profit = 0) {
   const now = new Date();
   const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   const date = now.toISOString().split('T')[0];
   const entry = { type, label, amount, profit, time, date };
 
   if (type === 'sale') {
-    _supabase.from('sales').insert([entry]).then(({ data }) => { if(data) salesData.push(data[0]); });
+    const { data } = await _supabase.from('sales').insert([entry]).select();
+    if (data) salesData.push(data[0]);
   } else if (type === 'expense') {
-    _supabase.from('expenses').insert([entry]).then(({ data }) => { if(data) expensesData.push(data[0]); });
+    const { data } = await _supabase.from('expenses').insert([entry]).select();
+    if (data) expensesData.push(data[0]);
   }
 
   renderSales();
@@ -450,31 +452,31 @@ saleProductEl.addEventListener("input", () => {
 });
 
 document.querySelectorAll("#gcashButtons .btn-chip").forEach((btn) => {
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", async () => {
     const amount = Number(btn.getAttribute("data-amount"));
     cashOnHand += amount;
-    addActivity("sale", "GCash/E‑Load", amount);
+    await addActivity("sale", "GCash/E‑Load", amount);
     gcashStatusEl.textContent = `Recorded sale: ${formatCurrency(amount)}`;
     updateKpis();
-    saveToLocalStorage();
+    await syncToSupabase();
   });
 });
 
 if (btnRecordGcashManualEl) {
-  btnRecordGcashManualEl.addEventListener("click", () => {
+  btnRecordGcashManualEl.addEventListener("click", async () => {
     const amount = Number(gcashManualAmountEl.value);
     if (isNaN(amount) || amount <= 0) return alert("Please enter a valid amount");
 
     cashOnHand += amount;
-    addActivity("sale", "GCash/E‑Load", amount);
+    await addActivity("sale", "GCash/E‑Load", amount);
     gcashStatusEl.textContent = `Recorded manual sale: ${formatCurrency(amount)}`;
     updateKpis();
-    saveToLocalStorage();
+    await syncToSupabase();
     gcashManualAmountEl.value = "";
   });
 }
 
-btnRecordSaleEl.addEventListener("click", () => {
+btnRecordSaleEl.addEventListener("click", async () => {
   const product = saleProductEl.value.trim();
   const qty = Number(saleQtyEl.value);
   const price = Number(salePriceEl.value);
@@ -494,16 +496,16 @@ btnRecordSaleEl.addEventListener("click", () => {
   }
 
   const profit = total - saleCogs;
-  addActivity("sale", `${product} (${qty})`, total, profit);
+  await addActivity("sale", `${product} (${qty})`, total, profit);
   updateKpis();
-  saveToLocalStorage();
+  await syncToSupabase();
 
   saleProductEl.value = "";
   saleQtyEl.value = "1";
   salePriceEl.value = "";
 });
 
-btnRecordExpenseEl.addEventListener("click", () => {
+btnRecordExpenseEl.addEventListener("click", async () => {
   const desc = expenseDescEl.value.trim();
   const amount = Number(expenseAmountEl.value);
 
@@ -515,16 +517,16 @@ btnRecordExpenseEl.addEventListener("click", () => {
 
   cashOnHand -= amount;
 
-  addActivity("expense", desc, amount);
+  await addActivity("expense", desc, amount);
   updateKpis();
-  saveToLocalStorage();
+  await syncToSupabase();
 
   expenseDescEl.value = "";
   expenseAmountEl.value = "";
 });
 
 if (btnRecordCashInEl) {
-  btnRecordCashInEl.addEventListener("click", () => {
+  btnRecordCashInEl.addEventListener("click", async () => {
     const desc = cashInDescEl.value.trim();
     const amount = Number(cashInAmountEl.value);
 
@@ -535,9 +537,9 @@ if (btnRecordCashInEl) {
       storeCapital += amount;
     }
 
-    addActivity("cash in", desc, amount);
+    await addActivity("cash in", desc, amount);
     updateKpis();
-    saveToLocalStorage();
+    await syncToSupabase();
     cashInDescEl.value = "";
     cashInAmountEl.value = "";
   });
@@ -546,8 +548,7 @@ if (btnRecordCashInEl) {
 if (btnResetDashboardEl) {
   btnResetDashboardEl.addEventListener("click", () => {
     if (confirm("Are you sure you want to reset all data? This will clear all sales, expenses, and inventory from Supabase. This cannot be undone.")) {
-      // Note: In production, you'd perform a multi-table delete here.
-      localStorage.clear(); 
+      localStorage.clear();
       location.reload();
     }
   });
