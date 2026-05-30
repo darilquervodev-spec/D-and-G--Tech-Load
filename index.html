@@ -9,8 +9,16 @@
 
 <body>
   <div class="layout">
+    <!-- Mobile Header -->
+    <div class="mobile-top-bar">
+      <button id="mobileMenuBtn" class="btn-chip" style="font-size: 1.2rem; padding: 4px 12px;">☰</button>
+      <div class="brand-title" style="font-size: 0.9rem;">D AND G TECH</div>
+    </div>
+
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
     <!-- ——— SIDEBAR ——— -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div>
         <div class="brand-title">D AND G TECH & LOAD</div>
         <div class="brand-sub">ACCESSORIES · G‑CASH & E‑LOAD · REPAIR</div>
@@ -70,7 +78,7 @@
             </div>
             <div class="main-subtitle" id="gcashStatus" style="margin-top: 8px;">Tap an amount or enter manually.</div>
           </div>
-          <div class="card" style="grid-column: span 4;"><div class="card-title">Low Stock Alerts</div><div class="list" id="lowStockList"></div></div>
+          <div class="card" style="grid-column: span 4;"><div class="card-title">Low Stock Alerts</div><div class="swipe-indicator">Swipe ↔</div><div class="list" id="lowStockList"></div></div>
           <div class="card" style="grid-column: span 4;">
             <div class="card-title">Quick Sales Entry</div>
             <input class="input" id="saleProduct" placeholder="Product name" list="inventoryDatalist">
@@ -93,7 +101,7 @@
             <input class="input" id="cashInAmount" type="number" placeholder="Amount">
             <button class="btn-primary" id="btnRecordCashIn" style="margin-top: 8px; background: linear-gradient(135deg, var(--accent-blue), #0369a1);">Record Cash In</button>
           </div>
-          <div class="card" style="grid-column: span 4;"><div class="card-title">Recent Activity</div><div class="list" id="activityList"></div></div>
+          <div class="card" style="grid-column: span 4;"><div class="card-title">Recent Activity</div><div class="swipe-indicator">Swipe ↔</div><div class="list" id="activityList"></div></div>
         </section>
       </div>
 
@@ -115,6 +123,7 @@
           </div>
           <div class="card" style="grid-column: span 8;">
             <div class="card-title">Stock List</div>
+            <div class="swipe-indicator">Swipe ↔</div>
             <input class="input" id="invSearch" placeholder="Search products..." style="margin-top: 10px;">
             <div class="list" id="fullInventoryList"></div>
           </div>
@@ -127,7 +136,7 @@
           <div class="main-title">Daily Sales History</div>
           <input type="date" id="salesDatePicker" class="input" style="width: auto; margin-bottom: 0;">
         </header>
-        <section class="grid"><div class="card" style="grid-column: span 12;"><div class="list" id="fullSalesList"></div></div></section>
+        <section class="grid"><div class="card" style="grid-column: span 12;"><div class="card-title">Sales List</div><div class="swipe-indicator">Swipe ↔</div><div class="list" id="fullSalesList"></div></div></section>
       </div>
 
       <!-- Expenses View -->
@@ -136,7 +145,7 @@
           <div class="main-title">Daily Expenses History</div>
           <input type="date" id="expensesDatePicker" class="input" style="width: auto; margin-bottom: 0;">
         </header>
-        <section class="grid"><div class="card" style="grid-column: span 12;"><div class="list" id="fullExpensesList"></div></div></section>
+        <section class="grid"><div class="card" style="grid-column: span 12;"><div class="card-title">Expenses List</div><div class="swipe-indicator">Swipe ↔</div><div class="list" id="fullExpensesList"></div></div></section>
       </div>
 
       <!-- Reports View -->
